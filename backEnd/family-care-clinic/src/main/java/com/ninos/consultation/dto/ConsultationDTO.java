@@ -1,7 +1,11 @@
-package com.ninos.consultation.entity;
+package com.ninos.consultation.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ninos.appointment.entity.Appointment;
-import jakarta.persistence.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,31 +17,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
-@Entity
-@Table(name = "consultations")
-public class Consultation {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ConsultationDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Long appointmentId;
 
     private LocalDateTime consultationDate;
 
-    @Lob
     private String subjectiveNotes;
 
-    @Lob
     private String objectiveFindings;
 
-    @Lob
     private String assessment;
 
-    @Lob
     private String plan;
-
-    @OneToOne
-    @JoinColumn(name = "appointment_id", unique = true, nullable = false)
-    private Appointment appointment;
 
 
 }
