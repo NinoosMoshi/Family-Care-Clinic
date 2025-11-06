@@ -15,6 +15,7 @@ import com.ninos.security.JwtService;
 import com.ninos.users.dto.LoginRequest;
 import com.ninos.users.dto.LoginResponse;
 import com.ninos.users.dto.RegistrationRequest;
+import com.ninos.users.dto.ResetPasswordRequest;
 import com.ninos.users.entity.PasswordResetCode;
 import com.ninos.users.entity.User;
 import com.ninos.users.repo.PasswordResetRepo;
@@ -203,12 +204,54 @@ public class AuthServiceImpl implements AuthService{
 
 
     @Override
-    public Response<?> updatePasswordViaResetCode(String email) {
-        return null;
+    public Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPassword) {
+
+         String code = resetPassword.getCode();
+         String newPassword = resetPassword.getNewPassword();
+
+         log.info("CODE IS: " + code);
+         log.info("NEW PASSWORD IS: " + newPassword);
+
+         // Find and validate code
+         PasswordResetCode resetCode = passwordResetRepo.findByCode(code)
+                 .orElseThrow(() -> new BadRequestException("Invalid reset code"));
+
+         // check expiration
+         if(resetCode.getExpiryDate().isBefore(LocalDateTime.now())){
+             passwordResetRepo.delete(resetCode); // clean up expired code
+             throw new BadRequestException("Reset code has expired");
+         }
+
+         // update the password
+         User user = resetCode.getUser();
+         user.setPassword(passwordEncoder.encode(newPassword));
+         userRepo.save(user);
+
+         // Delete the code immediately after successful use
+         passwordResetRepo.delete(resetCode);
+
+         // send password confirmation email
+        NotificationDTO passwordResetEmail = NotificationDTO.builder()
+                .recipient(user.getEmail())
+                .subject("Password Updated successfully")
+                .templateName("password-update-confirmation")
+                .templateVariables(Map.of(
+                        "name", user.getName()
+                ))
+                .build();
+
+        notificationService.sendEmail(passwordResetEmail, user);
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Password Updated Successfully")
+                .build();
+
     }
 
 
-    // PRIVATE METHODS
+
+    //.......PRIVATE METHODS.........//
     private void createPatientProfile(User user){
         Patient patient = Patient.builder()
                 .user(user)
