@@ -8,6 +8,7 @@ import com.ninos.patient.entity.Patient;
 import com.ninos.patient.repo.PatientRepo;
 import com.ninos.res.Response;
 import com.ninos.users.entity.User;
+import com.ninos.users.repo.UserRepo;
 import com.ninos.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class PatientServiceImpl implements PatientService{
 
     private final PatientRepo patientRepo;
+    private final UserRepo userRepo;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
@@ -73,7 +75,12 @@ public class PatientServiceImpl implements PatientService{
         Optional.ofNullable(patientDTO.getBloodGroup()).ifPresent(patient::setBloodGroup);
         Optional.ofNullable(patientDTO.getGenotype()).ifPresent(patient::setGenotype);
 
-        patientRepo.save(patient);
+        Patient savedPatient =  patientRepo.save(patient);
+
+        //update the name of the user
+        user.setName(savedPatient.getFirstName() + " " + savedPatient.getLastName());
+
+        userRepo.save(user);
 
         return Response.<PatientDTO>builder()
                 .statusCode(HttpStatus.OK.value())
