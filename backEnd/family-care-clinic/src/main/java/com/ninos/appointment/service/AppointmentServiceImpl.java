@@ -116,19 +116,99 @@ public class AppointmentServiceImpl implements AppointmentService{
 
     }
 
-    @Override
-    public Response<List<AppointmentDTO>> getMyAppointments() {
-        return null;
-    }
 
     @Override
-    public Response<AppointmentDTO> cancelAppointment(Long appointmentId) {
-        return null;
+    public Response<List<AppointmentDTO>> getMyAppointments() {
+
+        User user = userService.getCurrentUser();
+        Long userId = user.getId();
+        List<Appointment> appointments;
+
+        // Check Doctor's role
+        boolean isDoctor = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("DOCTOR"));
+
+        if(isDoctor){
+            // 1. Check doctor profile existence
+            doctorRepo.findByUser(user).orElseThrow(() -> new NotFoundException("Doctor profile not found"));
+
+            // 2. Efficiently fetch appointments of the doctor
+            appointments = appointmentRepo.findByDoctor_User_IdOrderByIdDesc(userId);
+        }else{
+            // 1. Check patient profile existence
+            patientRepo.findByUser(user).orElseThrow(() -> new NotFoundException("Patient profile not found"));
+
+            // 2. Efficiently fetch appointments using user id to navigate patient
+            appointments = appointmentRepo.findByPatient_User_IdOrderByIdDesc(userId);
+        }
+
+        List<AppointmentDTO> appointmentDTOList = appointments.stream()
+                .map(appointment -> modelMapper.map(appointment, AppointmentDTO.class))
+                .toList();
+
+        return Response.<List<AppointmentDTO>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Appointments retrieved successfully")
+                .data(appointmentDTOList)
+                .build();
     }
+
+
+    @Override
+    public Response<?> cancelAppointment(Long appointmentId) {
+
+        User user = userService.getCurrentUser();
+
+        Appointment appointment = appointmentRepo.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Appointment not found"));
+
+        // Add security check: only the patient or doctor involved can cancel
+        boolean isOwner = appointment.getPatient().getUser().getId().equals(user.getId()) ||
+                          appointment.getDoctor().getUser().getId().equals(user.getId());
+
+        if(!isOwner){
+            throw new BadRequestException("You don't have a permission to cancel this appointment");
+        }
+
+        // update status
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        Appointment savedAppointment = appointmentRepo.save(appointment);
+
+        // NOTE: Notification should be sent to the other party (patient/doctor)
+        sendAppointmentCancellation(savedAppointment, user);
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Appointments cancelled successfully")
+                .build();
+    }
+
 
     @Override
     public Response<?> completeAppointment(Long appointmentId) {
-        return null;
+
+        // get current user(must be a doctor)
+        User currentUser = userService.getCurrentUser();
+
+        // 1. fetch the appointment
+        Appointment appointment = appointmentRepo.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Appointment not fount with ID: " + appointmentId));
+
+        // Security Check: 1: Ensure the current user is a doctor assigned to this appointment
+        if(!appointment.getDoctor().getUser().getId().equals(currentUser.getId())){
+            throw new BadRequestException("Only Doctor can assigned to this appointment to complete");
+        }
+
+        // 2. update status and end time
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointment.setEndTime(LocalDateTime.now());
+
+        appointmentRepo.save(appointment);
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Appointment complete successfully")
+                .build();
     }
 
 
@@ -186,4 +266,60 @@ public class AppointmentServiceImpl implements AppointmentService{
         log.info("Dispatched new appointment email for doctor: {}", doctorUser.getEmail());
 
     }
+
+
+    private void sendAppointmentCancellation(Appointment appointment, User cancelingUser){
+
+        User patientUser = appointment.getPatient().getUser();
+        User doctorUser = appointment.getDoctor().getUser();
+
+        // Safety check to ensure the cancellingUser is involved
+        boolean isOwner = patientUser.getId().equals(cancelingUser.getId()) ||
+                          doctorUser.getId().equals(cancelingUser.getId());
+
+        if(!isOwner){
+            log.error("Cancellation initiated by user not associated with appointment. User ID: {}", cancelingUser.getId());
+            return;
+        }
+
+        String formattedTime = appointment.getStartTime().format(FORMATTER);
+        String cancellingPartyName = cancelingUser.getName();
+
+        Map<String, Object> baseVars = new HashMap<>();
+        baseVars.put("cancellingPartyName", cancellingPartyName);
+        baseVars.put("appointmentTime", formattedTime);
+        baseVars.put("doctorName", appointment.getDoctor().getLastName());
+        baseVars.put("patientFullName", patientUser.getName());
+
+        Map<String, Object> doctorVars = new HashMap<>(baseVars);
+        baseVars.put("recipientName", doctorUser.getName());
+
+        NotificationDTO doctorNotification = NotificationDTO.builder()
+                .recipient(doctorUser.getEmail())
+                .subject("Family Care Clinic: Appointment Cancellation")
+                .templateName("appointment-cancellation")
+                .templateVariables(doctorVars)
+                .build();
+
+        notificationService.sendEmail(doctorNotification, doctorUser);
+        log.info("Dispatched cancellation email to doctor: {}", doctorUser.getEmail());
+
+
+        Map<String, Object> patientVars = new HashMap<>(baseVars);
+        baseVars.put("recipientName", patientUser.getName());
+
+        NotificationDTO patientNotification = NotificationDTO.builder()
+                .recipient(patientUser.getEmail())
+                .subject("Family Care Clinic: Appointment Cancellation (ID: " + appointment.getId() + ")")
+                .templateName("appointment-cancellation")
+                .templateVariables(patientVars)
+                .build();
+
+        notificationService.sendEmail(patientNotification, patientUser);
+        log.info("Dispatched cancellation email to patient: {}", patientUser.getEmail());
+
+    }
+
+
+
 }

@@ -11,7 +11,7 @@ public interface AppointmentService {
 
     Response<List<AppointmentDTO>> getMyAppointments();
 
-    Response<AppointmentDTO> cancelAppointment(Long appointmentId);
+    Response<?> cancelAppointment(Long appointmentId);
 
     Response<?> completeAppointment(Long appointmentId);
 
