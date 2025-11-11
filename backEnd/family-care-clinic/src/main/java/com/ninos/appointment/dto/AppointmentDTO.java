@@ -29,7 +29,9 @@ public class AppointmentDTO {
     private Long doctorId;
 
     private String purposeOfConsultation;
+
     private String initialSymptoms;
+
 
     @NotNull(message = "Start time is required for the appointment")
     @Future(message = "Appointment must be scheduled for a future date and time") // @Future: you can not select time before date
