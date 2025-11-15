@@ -5,13 +5,14 @@ import com.ninos.users.dto.LoginRequest;
 import com.ninos.users.dto.LoginResponse;
 import com.ninos.users.dto.RegistrationRequest;
 import com.ninos.users.dto.ResetPasswordRequest;
-import com.ninos.users.entity.PasswordResetCode;
-import com.ninos.users.repo.PasswordResetRepo;
 import com.ninos.users.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
