@@ -12,6 +12,11 @@ import { AuthService } from '../../services/auth-service';
 })
 export class Register {
 
+  constructor(private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
+
   formData = {
     name: '',
     email: '',
@@ -20,11 +25,6 @@ export class Register {
 
   error = '';
   success = '';
-
-  constructor(private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) { }
 
 
   handleChange(event: any): void {
@@ -43,7 +43,7 @@ export class Register {
 
     this.authService.register(this.formData).subscribe({
       next: (res: any) => {
-        if (res.status === 200) {
+        if (res.statusCode === 200) {
           this.success = 'Registration successful! You can now log in.';
           this.formData = { name: '', email: '', password: '' };  // reset form(clears input fields)
 

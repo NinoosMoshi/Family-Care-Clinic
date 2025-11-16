@@ -35,8 +35,7 @@ export class DoctorService {
   }
 
   getAllSpecializationEnums(): Observable<any> {
-    return this.http.get(`${this.BASE_URL}/doctors/specializations`,
-      { headers: this.authService.getHeader() });
+    return this.http.get(`${this.BASE_URL}/doctors/specializations`)
   }
 
 }
