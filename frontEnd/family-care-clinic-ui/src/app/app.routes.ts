@@ -3,6 +3,9 @@ import { Home } from './pages/home/home';
 import { Register } from './pages/register/register';
 import { RegisterDoctor } from './pages/register-doctor/register-doctor';
 import { Login } from './pages/login/login';
+import { Profile } from './pages/profile/profile';
+import { UpdateProfile } from './pages/update-profile/update-profile';
+import { UpdatePassword } from './pages/update-password/update-password';
 
 export const routes: Routes = [
 
@@ -14,4 +17,9 @@ export const routes: Routes = [
 
     { path: 'home', component: Home },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+    // PROFILE ROUTES
+    { path: 'profile', component: Profile },
+    { path: 'update-profile', component: UpdateProfile },
+    { path: 'update-password', component: UpdatePassword },
 ];

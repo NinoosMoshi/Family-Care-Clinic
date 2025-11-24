@@ -11,11 +11,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+
   getHeader(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
   }
 

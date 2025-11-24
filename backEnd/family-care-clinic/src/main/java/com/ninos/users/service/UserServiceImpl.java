@@ -37,7 +37,8 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
     private final NotificationService notificationService;
 
-    private final String uploadDir = "uploads/profile-pictures/"; // save image for backend
+//    private final String uploadDir = "uploads/profile-pictures/"; // save image for backend
+    private final String uploadDir = "C:/Users/ninoo/OneDrive/Desktop/doctor-app(springboot-angular)/frontEnd/family-care-clinic-ui/public/profile-picture/"; // save image for frontend
 
 
     @Override
@@ -165,7 +166,9 @@ public class UserServiceImpl implements UserService{
             Files.copy(file.getInputStream(), filePath); // uploads/profile-pictures/a123b456-789c-4de0.png
 
 
-            String fileUrl = uploadDir + newFileName; // fileUrl = "uploads/profile-pictures/a123b456-789c-4de0.png"
+//            String fileUrl = uploadDir + newFileName; // fileUrl = "uploads/profile-pictures/a123b456-789c-4de0.png"
+              String fileUrl = "/profile-picture/" + newFileName;
+
 
             user.setProfilePictureUrl(fileUrl);
             userRepo.save(user);
