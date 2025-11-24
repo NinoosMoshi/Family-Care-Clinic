@@ -6,6 +6,8 @@ import { Login } from './pages/login/login';
 import { Profile } from './pages/profile/profile';
 import { UpdateProfile } from './pages/update-profile/update-profile';
 import { UpdatePassword } from './pages/update-password/update-password';
+import { BookAppointment } from './pages/book-appointment/book-appointment';
+
 
 export const routes: Routes = [
 
@@ -22,4 +24,5 @@ export const routes: Routes = [
     { path: 'profile', component: Profile },
     { path: 'update-profile', component: UpdateProfile },
     { path: 'update-password', component: UpdatePassword },
+    { path: 'book-appointment', component: BookAppointment },
 ];
