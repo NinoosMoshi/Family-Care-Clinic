@@ -1,5 +1,6 @@
 package com.ninos.patient.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ninos.appointment.entity.Appointment;
 import com.ninos.enums.BloodGroup;
 import com.ninos.enums.Genotype;
@@ -27,7 +28,12 @@ public class Patient {
 
     private String firstName;
     private String lastName;
+
+//    private LocalDate dateOfBirth;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
+
     private String phone;
 
     @Lob

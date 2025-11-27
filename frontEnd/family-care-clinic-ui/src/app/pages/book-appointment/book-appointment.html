@@ -42,12 +42,21 @@
                 <small class="form-help">Be specific about your symptoms, duration, and severity</small>
             </div>
 
+            <!-- <div class="form-group">
+                <label class="form-label">Preferred Date & Time</label>
+                <input type="datetime-local" name="startTime" class="form-input" [(ngModel)]="formData.startTime"
+                    [min]="getMinDateTime()"required />
+                <small class="form-help">Select your preferred appointment date and time</small>
+            </div> -->
+
             <div class="form-group">
                 <label class="form-label">Preferred Date & Time</label>
                 <input type="datetime-local" name="startTime" class="form-input" [(ngModel)]="formData.startTime"
-                    [min]="getMinDateTime()" required />
+                    [min]="todayLocal()" required />
                 <small class="form-help">Select your preferred appointment date and time</small>
             </div>
+
+
 
             <div class="form-actions">
                 <button type="button" class="btn btn-secondary" (click)="handleCancel()">

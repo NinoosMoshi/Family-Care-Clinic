@@ -122,14 +122,30 @@ export class Profile {
   }
 
 
+  // formatDate(dateString: string): string {
+  //   if (!dateString) return 'Not provided';
+  //   return new Date(dateString).toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
+  // }
+
+
   formatDate(dateString: string): string {
     if (!dateString) return 'Not provided';
-    return new Date(dateString).toLocaleDateString('en-US', {
+
+    const [y, m, d] = dateString.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
   }
+
+
+
+
 
 
   formatBloodGroup(bloodGroup: string): string {

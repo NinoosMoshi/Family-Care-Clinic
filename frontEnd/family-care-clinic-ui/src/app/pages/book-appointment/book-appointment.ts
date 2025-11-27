@@ -71,9 +71,11 @@ export class BookAppointment {
     const appointmentData = {
       ...this.formData,
       doctorId: parseInt(this.formData.doctorId),
-      startTime: new Date(this.formData.startTime).toISOString()
+      // startTime: new Date(this.formData.startTime).toISOString()
+      startTime: this.formData.startTime
     };
 
+    console.log("SENDING to backend:", this.formData.startTime);
     this.appointmentService.bookAppointment(appointmentData).subscribe({
       next: (response: any) => {
         if (response.statusCode === 200) {
@@ -119,6 +121,10 @@ export class BookAppointment {
   getMinDateTime(): string {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }
+  todayLocal(): string {
+    const now = new Date();
     return now.toISOString().slice(0, 16);
   }
 

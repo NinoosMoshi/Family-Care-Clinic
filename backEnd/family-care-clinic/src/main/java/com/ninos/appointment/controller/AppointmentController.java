@@ -20,6 +20,7 @@ public class AppointmentController {
 
     @PostMapping
     public ResponseEntity<Response<AppointmentDTO>> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO){
+        System.out.println("BACKEND RECEIVED startTime = " + appointmentDTO.getStartTime());
         return ResponseEntity.ok(appointmentService.bookAppointment(appointmentDTO));
     }
 

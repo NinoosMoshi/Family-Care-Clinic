@@ -110,7 +110,7 @@ export class UpdateProfile {
           this.success = 'Profile updated successfully!';
           setTimeout(() => {
             this.router.navigate(['/profile']);
-          }, 1500);
+          }, 2000);
         } else {
           this.error = response.message || 'Failed to update profile';
         }
