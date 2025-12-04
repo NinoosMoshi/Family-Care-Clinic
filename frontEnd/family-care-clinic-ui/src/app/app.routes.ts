@@ -8,6 +8,7 @@ import { UpdateProfile } from './pages/update-profile/update-profile';
 import { UpdatePassword } from './pages/update-password/update-password';
 import { BookAppointment } from './pages/book-appointment/book-appointment';
 import { MyAppointments } from './pages/my-appointments/my-appointments';
+import { ConsultationHistory } from './pages/consultation-history/consultation-history';
 
 
 export const routes: Routes = [
@@ -27,4 +28,5 @@ export const routes: Routes = [
     { path: 'update-password', component: UpdatePassword },
     { path: 'book-appointment', component: BookAppointment },
     { path: 'my-appointments', component: MyAppointments },
+    { path: 'consultation-history', component: ConsultationHistory },
 ];

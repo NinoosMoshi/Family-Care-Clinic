@@ -14,7 +14,6 @@ import { PatientService } from '../../services/patient-service';
 export class UpdateProfile {
 
   constructor(
-    private authService: AuthService,
     private patientService: PatientService,
     private router: Router,
     private cdr: ChangeDetectorRef
