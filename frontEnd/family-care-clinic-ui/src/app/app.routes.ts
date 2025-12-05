@@ -9,6 +9,8 @@ import { UpdatePassword } from './pages/update-password/update-password';
 import { BookAppointment } from './pages/book-appointment/book-appointment';
 import { MyAppointments } from './pages/my-appointments/my-appointments';
 import { ConsultationHistory } from './pages/consultation-history/consultation-history';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { ResetPassword } from './pages/reset-password/reset-password';
 
 
 export const routes: Routes = [
@@ -17,6 +19,8 @@ export const routes: Routes = [
     { path: 'register', component: Register },
     { path: 'register-doctor', component: RegisterDoctor },
     { path: 'login', component: Login },
+    { path: 'forgot-password', component: ForgotPassword },
+    { path: 'reset-password', component: ResetPassword },
 
 
     { path: 'home', component: Home },
