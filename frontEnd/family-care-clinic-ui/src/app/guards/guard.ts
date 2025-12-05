@@ -32,7 +32,6 @@ export const doctorOnlyGuard: CanActivateFn = (route, state) => {
 }
 
 
-
 export const authGuard: CanActivateFn = (route, state) => {
 
   const authService = inject(AuthService);
